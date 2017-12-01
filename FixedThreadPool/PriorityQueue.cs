@@ -47,6 +47,11 @@ namespace FixedThreadPool
             return result.Result;
         }
 
+        #region NotImplemented
+        public int Count { get; }
+        public bool IsSynchronized { get; }
+        public object SyncRoot { get; }
+
         public IEnumerator<KeyValuePair<Priority, ITask>> GetEnumerator()
         {
             throw new NotImplementedException();
@@ -62,10 +67,6 @@ namespace FixedThreadPool
             throw new NotImplementedException();
         }
 
-        public int Count { get; }
-        public bool IsSynchronized { get; }
-        public object SyncRoot { get; }
-
         public void CopyTo(KeyValuePair<Priority, ITask>[] array, int index)
         {
             throw new NotImplementedException();
@@ -75,6 +76,8 @@ namespace FixedThreadPool
         {
             throw new NotImplementedException();
         }
+
+        #endregion
 
         private (bool Result, Priority Priority) TryTake(out ITask result)
         {
@@ -89,6 +92,11 @@ namespace FixedThreadPool
                 {
                     _currentBarriers++;
                     return (true, Priority.High);
+                }
+                if (_queues[Priority.Normal].TryDequeue(out result))
+                {
+                    _currentBarriers = 0;
+                    return (true, Priority.Normal);
                 }
                 return (_queues[Priority.Low].TryDequeue(out result), Priority.Low);
             }

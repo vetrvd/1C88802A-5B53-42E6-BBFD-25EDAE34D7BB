@@ -11,7 +11,7 @@ namespace FixedThreadPool
         private readonly object _lockSyncCancelling = new object();
         private readonly BlockingCollection<KeyValuePair<Priority, ITask>> _priorityQueue;
         private readonly Thread[] _threads;
-        private bool _isCancelling;
+        private volatile bool _isCancelling;
 
         public FixedThreadPool(
             int maxThreads)
